@@ -26,7 +26,7 @@
             <table class="table">
                <thead>
                   <tr class="text-center">
-                     <th scope="col">Action</th>
+                     <th class="text-center" scope="col">Action</th>
                      <th scope="col">Orders Date</th>
                      <th scope="col">Grand Total</th>
                      <th scope="col">Payment Method</th>
@@ -39,9 +39,12 @@
                      <td>
                         <div class="col-lg-5 offset-lg-1">
                            <div class="s_product_text mb-4">
-                              <div class="card_area position-relative" style="padding-bottom:30px">
+                              <div class="card_area d-flex position-relative" style="padding-bottom:30px">
                                  <a href="orders/{{ $transaction->id }}">
                                     <button class="icon_btn border-0" href="#"><i class="fa-solid fa-eye"></i></button>
+                                 </a>
+                                 <a href="{{route('invoice.show', $transaction->invoice_number)}}" target="_blank">
+                                    <button class="icon_btn border-0" href="#"><i class="fas fa-print"></i></button>
                                  </a>
                               </div>
                            </div>

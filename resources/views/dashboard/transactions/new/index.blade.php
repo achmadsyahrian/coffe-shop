@@ -27,6 +27,9 @@
                            <h6 class="fw-semibold mb-0">#</h6>
                         </th>
                         <th class="border-bottom-0">
+                           <h6 class="fw-semibold mb-0">No. Faktur</h6>
+                        </th>
+                        <th class="border-bottom-0">
                            <h6 class="fw-semibold mb-0">Tanggal Pembelian</h6>
                         </th>
                         <th class="border-bottom-0">
@@ -56,6 +59,9 @@
                            <h6 class="fw-semibold mb-0">
                               {{ $i++ }}
                            </h6>
+                        </td>
+                        <td class="border-bottom-0">
+                           <h6>{{$transaction->invoice_number ?? '-'}}</h6>
                         </td>
                         <td class="border-bottom-0">
                            <div class="d-flex align-items-center gap-2">

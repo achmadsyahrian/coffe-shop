@@ -27,6 +27,9 @@
                            <h6 class="fw-semibold mb-0">#</h6>
                         </th>
                         <th class="border-bottom-0">
+                           <h6 class="fw-semibold mb-0">No. Faktur</h6>
+                        </th>
+                        <th class="border-bottom-0">
                            <h6 class="fw-semibold mb-0">Tanggal Pembelian</h6>
                         </th>
                         <th class="border-bottom-0">
@@ -34,6 +37,9 @@
                         </th>
                         <th class="border-bottom-0">
                            <h6 class="fw-semibold mb-0">Metode Pembayaran</h6>
+                        </th>
+                        <th class="border-bottom-0">
+                           <h6 class="fw-semibold mb-0">Staff Penangan</h6>
                         </th>
                         <th class="border-bottom-0">
                            <h6 class="fw-semibold mb-0">Action</h6>
@@ -58,6 +64,9 @@
                            </h6>
                         </td>
                         <td class="border-bottom-0">
+                           <h6>{{$transaction->invoice_number ?? '-'}}</h6>
+                        </td>
+                        <td class="border-bottom-0">
                            <div class="d-flex align-items-center gap-2">
                               <span class="badge bg-primary rounded-3 fw-semibold">
                                  {{ $transaction->payment_date }}
@@ -78,6 +87,15 @@
                                  @endif
                               </span>
                            </div>
+                        </td>
+                        <td class="border-bottom-0">
+                           <h6 class="fw-semibold mb-1">
+                              @if ($transaction->staff && $transaction->staff->id == Auth::id())
+                                 Anda
+                              @else
+                                 {{ $transaction->staff->name ?? '-' }}
+                              @endif
+                           </h6>
                         </td>
                         <td class="border-bottom-0">
                            <a href="/dashboard/transaction/completed/{{ $transaction->id }}" class="badge bg-info"

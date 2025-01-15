@@ -39,6 +39,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
     public function Outlet()
     {
         return $this->hasOne(Outlet::class);
@@ -48,4 +53,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(Rate::class);
     }
+    
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'user_id');
+    }
+
+    // Transaction Model (jika diperlukan relasi ke TransactionItem)
+    public function items()
+    {
+        return $this->hasManyThrough(TransactionItem::class, Transaction::class);
+    }
+
 }

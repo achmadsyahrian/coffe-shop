@@ -1,5 +1,12 @@
 @extends('layouts.main')
 @section('container')
+
+@if (session()->has('error'))
+<div class="alert alert-danger text-center mt-4" role="alert">
+   {{ session('error') }} <i class="fas fa-times-circle"></i>
+</div>
+@endif
+
 <div class="product_image_area">
    <div class="container">
       <div class="row s_product_inner">
@@ -66,17 +73,19 @@
          <br>
          <br>
          <br>
+         @if (auth()->user()->role_id == 3)
          <div class="">
             <label for="qty">Quantity:</label>
             <form action="{{ route('cart.add') }}" method="POST">
                @csrf
                <input type="hidden" name="product_id" value="{{ $product->id }}">
                <input type="number" name="qty" id="sst" size="2" maxlength="12" value="1" title="Quantity:" class="input-text qty" min="1">
-               <button type="submit" class="btn btn-primary" style="width: 170px; height:50px; border-radius:25px; ">
+               <button type="submit" class="btn btn-primary" style="width: 170px; height:50px; border-radius:25px; background-color: #795548; border:none;">
                   <i class="ti-shopping-cart"></i> Add to Cart
                </button>
             </form>
          </div>
+         @endif
       </div>
    </div>
 </div>
@@ -153,6 +162,15 @@
             <div class="row">
                @php
                   $mergedItems = $rates->merge($qualities);
+
+                  // Mapping kualitas description ke teks
+                  $qualityDescriptions = [
+                     1 => 'Sangat Buruk',
+                     2 => 'Buruk',
+                     3 => 'Standar',
+                     4 => 'Baik',
+                     5 => 'Sangat Baik',
+                  ];
                @endphp
                @foreach ($rates as $index => $rate)                   
                   <div class="col-lg-6 mb-5 text-center">
@@ -161,7 +179,9 @@
                            <div class="media">
                               <div class="media-body">
                                  <h4>{{ $rate->user->name }}</h4>
-                                 <p>Kualitas Produk: {{ $qualities[$index]->description }}</p>
+                                 <p>Kualitas Produk: 
+                                    {{ $qualityDescriptions[$qualities[$index]->description] ?? 'Tidak Diketahui' }}
+                                 </p>
                                  @php
                                     $rating = $rate->rating; // Gantilah dengan nilai rating dari database
                                     $stars = ceil($rating / 2);

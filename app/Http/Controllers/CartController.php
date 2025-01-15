@@ -23,6 +23,16 @@ class CartController extends Controller
         $productId = $request->input('product_id');
         $quantity = $request->input('qty');
 
+        $product = Product::find($productId);
+        if (!$product) {
+            session()->flash('error', 'Produk tidak ditemukan.');
+            return redirect()->back();
+        }
+        if ($quantity > $product->stock) {
+            session()->flash('error', 'Product stock is insufficient. Remaining stock: ' . $product->stock);
+            return redirect()->back();
+        }
+        
         $cart = session()->get('cart', []);
 
         // Cek apakah ada produk dengan outlet yang berbeda dalam keranjang

@@ -12,7 +12,7 @@ use App\Models\TransactionItem;
 
 class TransactionController extends Controller
 {
-    public function index() 
+    public function index()
     {
         $cart = session()->get('cart', []); //ambil data cart dari session
         $productId = array_keys($cart); //ambil id produk
@@ -24,13 +24,16 @@ class TransactionController extends Controller
             'provinces' => Province::all(),
         ]);
     }
-    
+
     public function store(Request $request)
     {
         $validateData = $request->validate([
             'payment_method' => 'required',
             'image' => 'required|image|file|max:3072',
         ]);
+
+        // Generate invoice number
+        $invoiceNumber = $this->generateInvoiceNumber();
 
         // Mengimput data ke tabel transaksi
         $transaction = Transaction::create([
@@ -41,9 +44,10 @@ class TransactionController extends Controller
             'provinsi' => $request->input('provinsi'),
             'kabupaten' => $request->input('kabupaten'),
             'kecamatan' => $request->input('kecamatan'),
-            'alamat' => $request->input('alamat_lengkap'),
+            'alamat_lengkap' => $request->input('alamat_lengkap'),
             'grand_total' => 0,
             'image' => $request->file('image')->store('transaction-image'),
+            'invoice_number' => $invoiceNumber, // Menambahkan invoice_number
         ]);
 
         // Mengimput data ke tabel transaksi_item
@@ -69,13 +73,49 @@ class TransactionController extends Controller
         $transaction->save();
         session()->forget('cart');
 
-        return redirect('/')->with('success', 'Thank you. Your order has been received');
-
+        return redirect()->route('invoice.show', ['invoice_number' => $transaction->invoice_number])
+                     ->with('success', 'Thank you. Your order has been received');
     }
+
+    public function showInvoice($invoice_number)
+    {
+        $transaction = Transaction::where('invoice_number', $invoice_number)
+                                ->with('transactionItems.product')
+                                ->firstOrFail();
+        $products = Product::take(6)->get();
+
+        return view('invoice.show', compact('transaction', 'products'));
+    }
+
+
+    // Fungsi private untuk generate nomor faktur
+    private function generateInvoiceNumber()
+    {
+        // Ambil tanggal hari ini
+        $date = now()->format('Ymd'); // Format: YYYYMMDD
+
+        // Ambil nomor faktur terakhir yang sudah ada di database dan ambil urutan terakhir
+        $lastInvoice = Transaction::whereDate('created_at', now()->toDateString())
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        // Tentukan nomor urut berdasarkan transaksi terakhir
+        $invoiceNumber = 1; // Default nomor urut
+        if ($lastInvoice) {
+            // Ambil angka urut dari faktur terakhir dan increment
+            $lastInvoiceNumber = (int)substr($lastInvoice->invoice_number, -4);
+            $invoiceNumber = $lastInvoiceNumber + 1;
+        }
+
+        // Generate invoice number dalam format: INV-YYYYMMDD-XXXX
+        return 'INV-' . $date . '-' . str_pad($invoiceNumber, 4, '0', STR_PAD_LEFT);
+    }
+
 
     // Untuk Alamat Detail Transaksi
     // Tampilkan kabupaten sesuai provinsi yg dipilih user
-    public function getKabupaten(Request $request) {
+    public function getKabupaten(Request $request)
+    {
         $namaProvinsi = $request->namaProvinsi;
         $idProvinsi = Province::where('name', $namaProvinsi)->first();
         $kabupatens = Regencies::where('province_id', $idProvinsi->id)->get();
@@ -85,7 +125,8 @@ class TransactionController extends Controller
     }
 
     // Tampilkan kecamatan sesuai kabupaten yg dipilih user
-    public function getKecamatan(Request $request) {
+    public function getKecamatan(Request $request)
+    {
         $namaKabupaten = $request->namaKabupaten;
         $idKabupaten = Regencies::where('name', $namaKabupaten)->first();
         $kecamatans = District::where('regency_id', $idKabupaten->id)->get();
@@ -93,5 +134,4 @@ class TransactionController extends Controller
             echo "<option value='$kecamatan->name'>$kecamatan->name</option>";
         }
     }
-    
 }

@@ -1,3 +1,3 @@
-<div class="py-6 px-6 text-center bg-white border-top" style="width: 100%; z-index:999;">
-      <p class="text-muted h6">Created with &hearts; by Achmad Syahrian &copy; 2023.</p>
-</div>
+<footer class="bg-white border-top py-6 px-6 text-center mt-auto" style="z-index: 999; width: 100%;">
+      <p class="text-muted h6">Created with &hearts; by Achmad Syahrian &copy; 2025.</p>
+</footer>  

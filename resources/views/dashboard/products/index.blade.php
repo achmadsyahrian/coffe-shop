@@ -1,6 +1,6 @@
 @extends('dashboard.layouts.main')
 @section('container')
-    <h1>My Product</h1>
+    <h1>List Products</h1>
     <hr>
     @if (session()->has('success'))  
       <div class="alert alert-success text-center" role="alert">
@@ -15,11 +15,25 @@
       </div>
     @endif
     <div class="row">
-        <div class="col-lg-11 d-flex align-items-stretch">
+        <div class="col-lg-12 align-items-stretch">
+          <div class="d-flex justify-content-between mb-3">
+            <form action="{{route('products.index')}}" method="get" class="d-flex align-items-center">
+              <label class="label mb-0 me-2" for="search_name">Cari</label>
+              <input type="text" class="form-control " id="search_name" name="name" value="{{request('name')}}">
+              <button type="submit" class="btn btn-outline-primary ms-2">
+                <i class="ti ti-search"></i>
+              </button>
+            </form>
+            <a href="{{route('products.index')}}" class="btn btn-outline-primary ms-2">
+              <i class="fas fa-undo-alt"></i>
+            </a>
+            
+            <a href="/dashboard/products/create" class="btn btn-primary ms-auto"><i class="fas fa-shopping-bag me-2"></i> Add New Product</a>
+          </div>    
+
             <div class="card w-100">
                 <div class="card-body p-4">
                 <div class="table-responsive">
-                <a href="/dashboard/products/create" class="btn btn-primary"><i class="ti ti-shopping-cart-plus"></i> Add New Product</a>
                   <table class="table text-nowrap mb-0 align-middle">
                     <thead class="text-dark fs-4">
                       <tr>
@@ -64,7 +78,7 @@
                                 </td>
                                 <td class="border-bottom-0">
                                     <div class="d-flex align-items-center gap-2">
-                                    <span class="badge bg-primary rounded-3 fw-semibold">{{ $product->stock }}</span>
+                                    <span class="badge rounded-3 fw-semibold" style="background-color: #795548;">{{ $product->stock }}</span>
                                     </div>
                                 </td>
                                 <td class="border-bottom-0">
@@ -91,9 +105,9 @@
                         @endforeach
                     </tbody>
                   </table>
-                </div>
-                <div class="d-flex justify-content-start mt-3">
+                  <div class="d-flex justify-content-center mt-3">
                     {{ $products->links() }}
+                  </div>
                 </div>
               </div>
             </div>

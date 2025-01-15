@@ -1,27 +1,26 @@
 <footer class="footer">
-	<div class="footer-area">
+	<div class="footer-area" style="background-color: #795548;">
 		<div class="container">
 			<div class="row section_gap">
 				<div class="col-lg-3 col-md-6 col-sm-6">
 					<div class="single-footer-widget tp_widgets">
 						<h4 class="footer_title large_title">Our Mission</h4>
-						<p>
-							Kami berkomitmen untuk
-							menyediakan produk berkualitas dan layanan pelanggan yang terbaik.
-						</p>
-						<p>
-							Dengan platform ini, kami bertujuan untuk menjadikan proses belanja online lebih mudah,
-							menyenangkan, dan memuaskan bagi pelanggan kami.
-						</p>
+						<p style="color: #e6e6e6;">
+							Kami berkomitmen untuk menyajikan kopi berkualitas tinggi dan memberikan pengalaman terbaik bagi pelanggan kami.
+					  </p>
+					  <p style="color: #e6e6e6;">
+							Dengan platform ini, kami ingin memudahkan Anda dalam menikmati kopi pilihan langsung di rumah Anda, 
+							sambil memberikan pengalaman belanja yang nyaman dan menyenangkan.
+					  </p>					  
 					</div>
 				</div>
 				<div class="offset-lg-1 col-lg-2 col-md-6 col-sm-6">
 					<div class="single-footer-widget tp_widgets">
 						<h4 class="footer_title">Quick Links</h4>
 						<ul class="list">
-							<li><a href="/">Home</a></li>
-							<li><a href="/shop">Shop</a></li>
-							<li><a href="/cart">Shopping Cart</a></li>
+							<li><a href="/" style="color: #e6e6e6;">Home</a></li>
+							<li><a href="/shop" style="color: #e6e6e6;">Shop</a></li>
+							<li><a href="/cart" style="color: #e6e6e6;">Shopping Cart</a></li>
 						</ul>
 					</div>
 				</div>
@@ -44,24 +43,14 @@
 								<span class="fa fa-location-arrow"></span>
 								Head Office
 							</p>
-							<p>123, Main Street, Your City</p>
+							<p style="color: #e6e6e6;">{{$outlet->address}}</p>
 
 							<p class="sm-head">
 								<span class="fa fa-phone"></span>
 								Phone Number
 							</p>
-							<p>
-								+123 456 7890 <br>
-								+123 456 7890
-							</p>
-
-							<p class="sm-head">
-								<span class="fa fa-envelope"></span>
-								Email
-							</p>
-							<p>
-								free@infoexample.com <br>
-								www.infoexample.com
+							<p style="color: #e6e6e6;">
+								{{$outlet->phone}}
 							</p>
 						</div>
 					</div>
@@ -70,11 +59,11 @@
 		</div>
 	</div>
 
-	<div class="footer-bottom">
+	<div class="footer-bottom" style="background-color: #795548;">
 		<div class="container">
 			<div class="row d-flex">
 				<p class="col-lg-12 footer-text text-center">
-					Created with &hearts; by Achmad Syahrian &copy; 2023.</p>
+					Created with &hearts; by Achmad Syahrian &copy; 2025.</p>
 			</div>
 		</div>
 	</div>

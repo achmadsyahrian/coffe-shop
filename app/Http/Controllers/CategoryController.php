@@ -13,13 +13,26 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        // Ambil parameter pencarian dari query string
+        $searchName = $request->input('name');
+        
+        // Query untuk mendapatkan kategori sesuai dengan outlet_id dan nama kategori jika ada pencarian
+        $categories = Category::when($searchName, function($query) use ($searchName) {
+                return $query->where('name', 'like', '%' . $searchName . '%');
+            })
+            ->paginate(10);
+
+        // Menambahkan parameter pencarian pada pagination link
+        $categories->appends(['name' => $searchName]);
+
         return view('dashboard.categories.index', [
-            'categories' => Category::where('outlet_id', auth()->user()->outlet->id)->paginate(10),
+            'categories' => $categories,
             'outlets' => Outlet::all()
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -46,7 +59,7 @@ class CategoryController extends Controller
             'name' => 'required|unique:categories|string'
         ]);
 
-        $validateData['outlet_id'] = auth()->user()->outlet->id;
+        $validateData['outlet_id'] = Outlet::first()->get('id');
         Category::create($validateData);
 
         return redirect('/dashboard/categories')->with('success', 'New Category has been added!');
@@ -85,12 +98,11 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        
         $validateData = $request->validate([
             'name' => 'required|unique:categories|string'
         ]);
 
-        $validateData['outlet_id'] = auth()->user()->outlet->id;
+        $validateData['outlet_id'] = Outlet::first()->get('id');
 
         Category::where('id', $category->id)
                 ->update([

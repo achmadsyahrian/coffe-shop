@@ -13,10 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('roles', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->string('invoice_number')->nullable()->unique();
         });
     }
 
@@ -27,6 +25,10 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('roles');
+        Schema::table('transactions', function (Blueprint $table) {
+            Schema::table('transactions', function (Blueprint $table) {
+                $table->dropColumn('invoice_number');
+            });
+        });
     }
 };

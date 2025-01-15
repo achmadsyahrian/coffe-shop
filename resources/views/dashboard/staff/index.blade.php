@@ -1,6 +1,6 @@
 @extends('dashboard.layouts.main')
 @section('container')
-    <h1>Product Categories</h1>
+    <h1>Staff Admin</h1>
     <hr>
     @if (session()->has('success'))
         <div class="alert alert-success text-center" role="alert">
@@ -18,7 +18,7 @@
         <div class="col-lg-12 align-items-stretch">
 
             <div class="d-flex justify-content-between mb-3">
-                <form action="{{ route('categories.index') }}" method="get" class="d-flex align-items-center">
+                <form action="{{ route('staff.index') }}" method="get" class="d-flex align-items-center">
                     <label class="label mb-0 me-2" for="search_name">Cari</label>
                     <input type="text" class="form-control " id="search_name" name="name"
                         value="{{ request('name') }}">
@@ -26,12 +26,12 @@
                         <i class="ti ti-search"></i>
                     </button>
                 </form>
-                <a href="{{ route('categories.index') }}" class="btn btn-outline-primary ms-2">
+                <a href="{{ route('staff.index') }}" class="btn btn-outline-primary ms-2">
                     <i class="fas fa-undo-alt"></i>
                 </a>
 
-                <a href="/dashboard/categories/create" class="btn btn-primary ms-auto">
-                    <i class="fas fa-boxes me-2"></i> Add New Category
+                <a href="{{route('staff.create')}}" class="btn btn-primary ms-auto">
+                    <i class="fas fa-user me-2"></i> Add New Staff
                 </a>
             </div>
 
@@ -45,7 +45,10 @@
                                         <h6 class="fw-semibold mb-0">#</h6>
                                     </th>
                                     <th class="border-bottom-0">
-                                        <h6 class="fw-semibold mb-0">Category Name</h6>
+                                        <h6 class="fw-semibold mb-0">Name</h6>
+                                    </th>
+                                    <th class="border-bottom-0">
+                                        <h6 class="fw-semibold mb-0">Phone</h6>
                                     </th>
                                     <th class="border-bottom-0">
                                         <h6 class="fw-semibold mb-0">Action</h6>
@@ -54,9 +57,9 @@
                             </thead>
                             <tbody>
                                 @php
-                                    $pageNumber = ($categories->currentPage() - 1) * $categories->perPage();
+                                    $pageNumber = ($staffs->currentPage() - 1) * $staffs->perPage();
                                 @endphp
-                                @foreach ($categories as $category)
+                                @foreach ($staffs as $staff)
                                     @php
                                         $pageNumber++;
                                     @endphp
@@ -67,21 +70,36 @@
                                             </h6>
                                         </td>
                                         <td class="border-bottom-0">
-                                            <h6 class="fw-semibold mb-1">{{ $category->name }}</h6>
+                                            <h6 class="fw-semibold mb-1">{{ $staff->name }}</h6>
                                         </td>
                                         <td class="border-bottom-0">
-                                            <a href="/dashboard/categories/{{ $category->id }}/edit"
+                                            <div class="d-flex align-items-center gap-2">
+                                            <span class="badge rounded-3 fw-semibold" style="background-color: #795548;"><i class="fas fa-phone fs-2 me-2"></i> {{ $staff->phone }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="border-bottom-0">
+                                            <form action="{{route('staff.resetPassword', $staff->id)}}" method="POST"
+                                                class="d-inline" id="formReset_{{ $staff->id }}">
+                                                @method('put')
+                                                @csrf
+                                                <button type="submit"
+                                                    onclick="event.preventDefault(); resetPassword('{{ $staff->id }}');"
+                                                    class="badge bg-primary border-0">
+                                                    <i class="fas fa-sync-alt"></i>
+                                                </button>
+                                            </form>
+                                            <a href="/dashboard/staff/{{ $staff->id }}/edit"
                                                 class="badge bg-warning"
                                                 style="text-decoration: none !important; color: white !important;">
                                                 <i class="ti ti-edit"></i>
                                             </a>
                                             <!-- Perbarui elemen form dengan id yang unik untuk setiap kategori -->
-                                            <form action="/dashboard/categories/{{ $category->id }}" method="POST"
-                                                class="d-inline" id="formDelete_{{ $category->id }}">
+                                            <form action="/dashboard/staff/{{ $staff->id }}" method="POST"
+                                                class="d-inline" id="formDelete_{{ $staff->id }}">
                                                 @method('delete')
                                                 @csrf
                                                 <button type="submit"
-                                                    onclick="event.preventDefault(); deleteData('{{ $category->id }}');"
+                                                    onclick="event.preventDefault(); deleteData('{{ $staff->id }}');"
                                                     class="badge bg-danger border-0">
                                                     <i class="ti ti-trash"></i>
                                                 </button>
@@ -92,7 +110,7 @@
                             </tbody>
                         </table>
                         <div class="d-flex justify-content-center mt-3">
-                            {{ $categories->links() }}
+                            {{ $staffs->links() }}
                         </div>
                     </div>
                 </div>

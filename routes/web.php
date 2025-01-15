@@ -17,6 +17,10 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\CreateOutletController;
 use App\Http\Controllers\DashboardTransactionController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\StaffController;
+use App\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -32,8 +36,16 @@ use App\Http\Controllers\DashboardTransactionController;
 // =================================================================================================================
 // Main Section
 Route::get('/', function () {
+    $popularProducts = Product::with('category') // Memuat relasi kategori
+        ->leftJoin('transaction_items', 'products.id', '=', 'transaction_items.product_id')
+        ->select('products.id', 'products.name', 'products.photo_1', 'products.category_id', 'products.harga', DB::raw('SUM(transaction_items.quantity) as total_quantity'))
+        ->groupBy('products.id', 'products.name', 'products.photo_1', 'products.category_id', 'products.harga')
+        ->orderByDesc('total_quantity')
+        ->paginate(10);
+    
     return view('index', [
-        'products' => Product::latest()->get()
+        'products' => Product::latest()->get(),
+        'popularProducts' => $popularProducts
     ]);
 });
 
@@ -54,6 +66,8 @@ Route::post('/transaction', [TransactionController::class, 'store'])->name('tran
 Route::get('/confirmation', function() {
     return view('confirmation');
 });
+Route::get('/invoice/{invoice_number}', [TransactionController::class, 'showInvoice'])->name('invoice.show');
+
 
 // =================================================================================================================
 // Region Controller
@@ -69,9 +83,30 @@ Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remov
 
 
 // =================================================================================================================
-// Dashboard / Outlet Section
+// Order Section
 Route::get('/orders', [OrderController::class, 'index'])->middleware('auth');
 Route::get('/orders/{transaction:id}', [OrderController::class, 'detail'])->middleware('auth');
+
+// =================================================================================================================
+// Dashboard / Customer Section
+Route::get('/dashboard/customers', function() {
+    $customers = User::where('role_id', 3)->paginate(10);
+
+    $customers->each(function($customer) {
+        // Memuat transaksi beserta itemnya
+        $transactions = $customer->transactions()
+            ->whereHas('transactionItems') // Memastikan transaksi memiliki item
+            ->with('transactionItems') // Memuat relasi transactionItems
+            ->get();
+
+        // Menghitung total item yang dibeli oleh customer
+        $customer->total_items_bought = $transactions->sum(function($transaction) {
+            return $transaction->transactionItems->sum('quantity');
+        });
+    });
+
+    return view('dashboard.customers.index', compact('customers'));
+})->name('customers.index')->middleware('auth');
 
 
 // =================================================================================================================
@@ -85,6 +120,11 @@ Route::resource('/dashboard/categories', CategoryController:: class)->middleware
 // Route::get('/create-outlet', [CreateOutletController::class, 'index'])->middleware('auth');
 // Route::post('/create-outlet', [CreateOutletController::class, 'store'])->middleware('auth');
 
+
+// =================================================================================================================
+// Dashboard / Staff Section
+Route::resource('/dashboard/staff', StaffController::class)->middleware('auth');
+Route::put('/dashboard/staff/reset-password/{id}', [StaffController::class, 'resetPassword'])->name('staff.resetPassword')->middleware('auth');
 
 // =================================================================================================================
 // Authentication Section
@@ -112,6 +152,9 @@ Route::get('/dashboard/transaction/completed/{transaction:id}', [DashboardTransa
 
 Route::get('/dashboard/transaction/rejected', [DashboardTransactionController::class, 'showReject'])->middleware('auth');
 Route::get('/dashboard/transaction/rejected/{transaction:id}', [DashboardTransactionController::class, 'detailReject'])->middleware('auth');
+
+Route::get('/dashboard/transaction/report', [ReportController::class, 'index'])->name('report.index')->middleware('auth');
+Route::post('/dashboard/transaction/report/print', [ReportController::class, 'print'])->name('report.print')->middleware('auth');
 
 
 Route::post('/review', [ReviewController::class, 'store']);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Outlet;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
@@ -11,8 +12,7 @@ class DashboardTransactionController extends Controller
 {
     public function showNew()
     {
-        $outletAuth = auth()->user()->outlet->id;
-        $productBuy = Product::where('outlet_id', $outletAuth)->pluck('id');
+        $productBuy = Product::pluck('id');
         $transactionItems = TransactionItem::whereIn('product_id', $productBuy)->get();
         $transactionIds = $transactionItems->pluck('transaction_id')->unique();
         $transactions = Transaction::whereIn('id', $transactionIds)
@@ -38,15 +38,37 @@ class DashboardTransactionController extends Controller
         ]);
 
         $transaction->payment_status = $validateData['payment_status'];
+        $transaction->staff_id = auth()->user()->id;
         $transaction->save();
 
-        return redirect('/dashboard/transaction/new')->with('success', 'Payment has been confirmated!');
+        if ($validateData['payment_status'] === 'completed') {
+            foreach ($transaction->transactionItems as $item) {
+                // Ambil produk terkait
+                $product = $item->product;
+
+                if ($product) {
+                    // Kurangi stok sesuai quantity dalam transaksi
+                    $product->stock -= $item->quantity;
+
+                    // Cegah stok negatif
+                    if ($product->stock < 0) {
+                        return redirect('/dashboard/transaction/new')->with('error', 'Stock not sufficient for product: ' . $product->name);
+                    }
+
+                    // Simpan perubahan stok
+                    $product->save();
+                }
+            }
+        }
+
+        return redirect('/dashboard/transaction/new')->with('success', 'Payment has been confirmed!');
     }
+
 
     public function showComplete()
     {
-        $outletAuth = auth()->user()->outlet->id;
-        $productBuy = Product::where('outlet_id', $outletAuth)->pluck('id');
+        $outletAuth = Outlet::first()->get('id');
+        $productBuy = Product::pluck('id');
         $transactionItems = TransactionItem::whereIn('product_id', $productBuy)->get();
         $transactionIds = $transactionItems->pluck('transaction_id')->unique();
         $transactions = Transaction::whereIn('id', $transactionIds)
@@ -68,8 +90,8 @@ class DashboardTransactionController extends Controller
 
     public function showReject()
     {
-        $outletAuth = auth()->user()->outlet->id;
-        $productBuy = Product::where('outlet_id', $outletAuth)->pluck('id');
+        $outletAuth = Outlet::first()->get('id');
+        $productBuy = Product::pluck('id');
         $transactionItems = TransactionItem::whereIn('product_id', $productBuy)->get();
         $transactionIds = $transactionItems->pluck('transaction_id')->unique();
         $transactions = Transaction::whereIn('id', $transactionIds)
