@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Penjualan - Toko Kopi</title>
+    <title>Laporan Penjualan - {{$outlet->name}}</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -36,15 +36,15 @@
         }
 
         .logo-img {
-            width: 50px;
-            height: 50px;
+            width: 70px;
+            height: 70px;
         }
 
         .store-name {
             font-size: 30px;
             font-weight: 700;
             text-align: center;
-            margin-left: 15px;
+            margin-left: 5px;
             /* Menjaga teks tetap rata tengah */
         }
 
@@ -101,6 +101,8 @@
             cursor: pointer;
             border-radius: 5px;
             margin: 20px;
+            display: flex;
+            justify-content: center;
             transition: background-color 0.3s;
         }
 
@@ -258,7 +260,7 @@
             </tbody>
         </table>
     </div>
-    <button class="print-btn" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+    <button class="print-btn" onclick="window.print()"><i class="fas fa-print" style="margin-right: 5px;"></i> Print</button>
 
     <script src="https://kit.fontawesome.com/23dde1eb1b.js" crossorigin="anonymous"></script>
     <script>

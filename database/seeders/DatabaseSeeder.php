@@ -30,8 +30,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
-            'username' => 'seduhsantai',
-            'name' => 'Achmad Syahrian',
+            'username' => 'driplycoffee',
+            'name' => 'Driply Coffee',
             'password' => bcrypt('password'),
             'role_id' => 1,
             'phone' => '0895423336075'
@@ -39,12 +39,12 @@ class DatabaseSeeder extends Seeder
         
         Outlet::create([
             'user_id' => 1,
-            'name' => "Seduh Santai",
-            'address' => "Jln. Kol Yos Sudarso No.16, Medan",
-            'phone' => '089528126200',
-            'description' => "Selamat datang di Seduh Santai, tempat di mana secangkir kopi menjadi teman terbaik untuk melepas penat. Kami menyajikan kopi terbaik dari biji kopi lokal pilihan, diracik dengan penuh cinta untuk menciptakan pengalaman ngopi yang santai dan memuaskan. Dengan suasana yang hangat dan nyaman, Seduh Santai menjadi tempat ideal untuk bersantai sendiri, berbincang bersama teman, atau mencari inspirasi baru.
+            'name' => "Driply Coffee",
+            'address' => "Jl. Durung Komplek Durung Regency No.A4, Sidorejo Hilir, Kec. Medan Tembung, Kota Medan, Sumatera Utara 20222",
+            'phone' => '085261663175',
+            'description' => "Selamat datang di Driply Coffee, tempat di mana secangkir kopi menjadi teman terbaik untuk melepas penat. Kami menyajikan kopi terbaik dari biji kopi lokal pilihan, diracik dengan penuh cinta untuk menciptakan pengalaman ngopi yang santai dan memuaskan. Dengan suasana yang hangat dan nyaman, Driply Coffee menjadi tempat ideal untuk bersantai sendiri, berbincang bersama teman, atau mencari inspirasi baru.
             
-            Selain kopi, kami juga menyediakan aneka makanan ringan yang menggugah selera untuk melengkapi momen santai Anda. Interior yang menenangkan, aroma kopi yang khas, dan layanan yang ramah akan membuat Anda betah berlama-lama. Nikmati waktu Anda, karena di Seduh Santai, setiap tegukan adalah momen yang berharga. ☕"
+            Selain kopi, kami juga menyediakan aneka makanan ringan yang menggugah selera untuk melengkapi momen santai Anda. Interior yang menenangkan, aroma kopi yang khas, dan layanan yang ramah akan membuat Anda betah berlama-lama. Nikmati waktu Anda, karena di Driply Coffee, setiap tegukan adalah momen yang berharga. ☕"
         ]);
     }
 }
