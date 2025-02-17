@@ -94,12 +94,44 @@
                             No. Telepon: {{ $transaction->user->phone ?? '-' }}<br>
                         </p>
                         <p class="card-text">
-                            Kecamatan: {{ $transaction->kecamatan }}<br>
-                            Kabupaten: {{ $transaction->kabupaten }}<br>
-                            Provinsi: {{ $transaction->provinsi }}<br><br>
+                            Kecamatan: {{ $transaction->kecamatan }}<br><br>
+                            {{-- Kabupaten: {{ $transaction->kabupaten }}<br>
+                            Provinsi: {{ $transaction->provinsi }}<br><br> --}}
                             Alamat Lengkap:<br>
                             {{ $transaction->alamat_lengkap }}
                         </p>
+
+                        <!-- Peta -->
+                        <div id="map" style="height: 300px; width: 100%;"></div>
+                        <!-- Tombol Buka di Google Maps -->
+                        <a id="openGoogleMaps" href="#" target="_blank" class="btn btn-info mt-2" style="display: none;">
+                            Buka di Google Maps
+                        </a>
+                        <script>
+                            var latitude = {{ $transaction->latitude ?? 0 }};
+                            var longitude = {{ $transaction->longitude ?? 0 }};
+                        
+                            if (latitude !== 0 && longitude !== 0) {
+                                var map = L.map('map').setView([latitude, longitude], 15);
+                        
+                                // Tambahkan tile layer dari OpenStreetMap
+                                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                    attribution: '&copy; OpenStreetMap contributors'
+                                }).addTo(map);
+                        
+                                // Tambahkan marker di lokasi customer
+                                L.marker([latitude, longitude]).addTo(map)
+                                    .bindPopup("Lokasi Customer")
+                                    .openPopup();
+                        
+                                // Tampilkan tombol buka di Google Maps
+                                var googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                                document.getElementById('openGoogleMaps').href = googleMapsUrl;
+                                document.getElementById('openGoogleMaps').style.display = 'inline-block';
+                            } else {
+                                document.getElementById('map').innerHTML = "<p style='color: red;'>Lokasi tidak tersedia</p>";
+                            }
+                        </script>
                     <hr>
                     @if ($transaction->payment_status === 'new')
                         <form method="POST"

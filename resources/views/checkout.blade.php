@@ -30,7 +30,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            <label for="provinsi">Provinsi</label>
+                            {{-- <label for="provinsi">Provinsi</label>
                             <select id="provinsi" name="provinsi" class="custom-select">
                                 <option selected>Pilih Provinsi</option>
                                 @foreach ($provinces as $provinsi)
@@ -40,14 +40,52 @@
                             <label for="kabupaten" class="mt-3">Kabupaten/Kota</label>
                             <select id="kabupaten" name="kabupaten" class="custom-select">
                                 <option selected>Pilih Kabupaten/Kota</option>
-                            </select>
+                            </select> --}}
                             <label for="kecamatan" class="mt-3">Kecamatan</label>
-                            <select id="kecamatan" name="kecamatan" class="custom-select">
-                                <option selected>Pilih Kecamatan</option>
+                            <select name="kecamatan" class="custom-select">
+                                @foreach ($kecamatans as $kecamatan)
+                                    <option value="{{ $kecamatan->name }}">{{ $kecamatan->name }}</option>
+                                @endforeach
                             </select>
+                            <label for="lokasi" class="mt-3">Titik Lokasi</label>
+                            <div id="map" style="height: 300px; width: 100%;"></div>
+                            <input type="hidden" id="latitude" name="latitude">
+                            <input type="hidden" id="longitude" name="longitude">
+
                             <label class="form-label mt-3" for="validationTextarea">Alamat Lengkap</label>
                             <textarea class="form-control" id="validationTextarea" name="alamat_lengkap" placeholder="Alamat Lengkap">{{ old('description') }}</textarea>
                     </div>
+                    <script>
+                        var map = L.map('map').setView([3.5952, 98.6722], 12); // Set awal (Indonesia)
+                    
+                        // Tambahkan peta dari OpenStreetMap
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; OpenStreetMap contributors'
+                        }).addTo(map);
+                    
+                        var marker; // Simpan marker
+                    
+                        // Event ketika user mengklik peta
+                        map.on('click', function(e) {
+                            var lat = e.latlng.lat;
+                            var lng = e.latlng.lng;
+                    
+                            // Hapus marker lama (jika ada)
+                            if (marker) {
+                                map.removeLayer(marker);
+                            }
+                    
+                            // Tambahkan marker baru
+                            marker = L.marker([lat, lng]).addTo(map)
+                                .bindPopup("Latitude: " + lat + "<br>Longitude: " + lng)
+                                .openPopup();
+                    
+                            // Isi input hidden dengan koordinat
+                            document.getElementById('latitude').value = lat;
+                            document.getElementById('longitude').value = lng;
+                        });
+                    </script>
+                    
                     <div class="col-lg-5">
                         <div class="order_box">
                             <h2>Your Order</h2>

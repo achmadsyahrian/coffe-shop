@@ -21,7 +21,8 @@ class TransactionController extends Controller
             'products' => Product::all(),
             'productsCart' => $products,
             'cart' => $cart,
-            'provinces' => Province::all(),
+            'provinces' => Province::where('id', 12)->get(),
+            'kecamatans' => District::where('regency_id', 1271)->get(),
         ]);
     }
 
@@ -34,16 +35,17 @@ class TransactionController extends Controller
 
         // Generate invoice number
         $invoiceNumber = $this->generateInvoiceNumber();
-
         // Mengimput data ke tabel transaksi
         $transaction = Transaction::create([
             'user_id' => auth()->user()->id,
             'payment_method' => $validateData['payment_method'],
             'payment_date' => now()->toDateString(),
             'payment_status' => 'new',
-            'provinsi' => $request->input('provinsi'),
-            'kabupaten' => $request->input('kabupaten'),
+            // 'provinsi' => $request->input('provinsi'),
+            // 'kabupaten' => $request->input('kabupaten'),
             'kecamatan' => $request->input('kecamatan'),
+            'latitude' => $request->input('latitude'),
+            'longitude' => $request->input('longitude'),
             'alamat_lengkap' => $request->input('alamat_lengkap'),
             'grand_total' => 0,
             'image' => $request->file('image')->store('transaction-image'),
@@ -88,6 +90,29 @@ class TransactionController extends Controller
     }
 
 
+    // Untuk Alamat Detail Transaksi
+    // Tampilkan kabupaten sesuai provinsi yg dipilih user
+    public function getKabupaten(Request $request)
+    {
+        $namaProvinsi = $request->namaProvinsi;
+        $idProvinsi = Province::where('name', $namaProvinsi)->first();
+        $kabupatens = Regencies::where('province_id', $idProvinsi->id)->where('id', 1271)->get();
+        foreach ($kabupatens as $kabupaten) {
+            echo "<option value='$kabupaten->name'>$kabupaten->name</option>";
+        }
+    }
+
+    // Tampilkan kecamatan sesuai kabupaten yg dipilih user
+    public function getKecamatan(Request $request)
+    {
+        $namaKabupaten = $request->namaKabupaten;
+        $idKabupaten = Regencies::where('name', $namaKabupaten)->first();
+        $kecamatans = District::where('regency_id', $idKabupaten->id)->get();
+        foreach ($kecamatans as $kecamatan) {
+            echo "<option value='$kecamatan->name'>$kecamatan->name</option>";
+        }
+    }
+
     // Fungsi private untuk generate nomor faktur
     private function generateInvoiceNumber()
     {
@@ -109,29 +134,5 @@ class TransactionController extends Controller
 
         // Generate invoice number dalam format: INV-YYYYMMDD-XXXX
         return 'INV-' . $date . '-' . str_pad($invoiceNumber, 4, '0', STR_PAD_LEFT);
-    }
-
-
-    // Untuk Alamat Detail Transaksi
-    // Tampilkan kabupaten sesuai provinsi yg dipilih user
-    public function getKabupaten(Request $request)
-    {
-        $namaProvinsi = $request->namaProvinsi;
-        $idProvinsi = Province::where('name', $namaProvinsi)->first();
-        $kabupatens = Regencies::where('province_id', $idProvinsi->id)->get();
-        foreach ($kabupatens as $kabupaten) {
-            echo "<option value='$kabupaten->name'>$kabupaten->name</option>";
-        }
-    }
-
-    // Tampilkan kecamatan sesuai kabupaten yg dipilih user
-    public function getKecamatan(Request $request)
-    {
-        $namaKabupaten = $request->namaKabupaten;
-        $idKabupaten = Regencies::where('name', $namaKabupaten)->first();
-        $kecamatans = District::where('regency_id', $idKabupaten->id)->get();
-        foreach ($kecamatans as $kecamatan) {
-            echo "<option value='$kecamatan->name'>$kecamatan->name</option>";
-        }
     }
 }
